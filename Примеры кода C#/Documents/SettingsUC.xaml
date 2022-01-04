@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="Monitel.SCADA.UICommon.Documents.SettingsUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"  xmlns:wpfres="clr-namespace:Monitel.UI.WPF.Resources;assembly=Monitel.UI.WPF.Resources"
+             xmlns:lm="clr-namespace:Monitel.UI.WPFExtensions.Localization;assembly=Monitel.UI.WPFExtensions"
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"             
+             xmlns:local="clr-namespace:Monitel.SCADA.UICommon.Documents"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" >
+    
+    <Grid x:Name="MainGrid" Margin="11">
+        <GroupBox Header="{lm:Link settingWndReferences, 'Ссылки'}" x:Name="gbWebView">
+            <!--<wv2:WebView2 Name="WebView" />-->
+        </GroupBox>
+    </Grid>
+   
+</UserControl>

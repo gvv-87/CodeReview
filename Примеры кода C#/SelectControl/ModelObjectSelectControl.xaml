@@ -1,0 +1,423 @@
+﻿<UserControl x:Class="Monitel.SCADA.UICommon.SelectControl.ModelObjectSelectControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:src="clr-namespace:Monitel.SCADA.UICommon.SelectControl"
+             xmlns:dctrl="clr-namespace:Monitel.Diogen.Controls;assembly=Monitel.Diogen.Controls"
+             xmlns:micnv="clr-namespace:Monitel.SCADA.UICommon.Converters"
+             xmlns:lang="clr-namespace:Monitel.UI.WPFExtensions.Localization;assembly=Monitel.UI.WPFExtensions"
+             xmlns:tree="clr-namespace:Monitel.UI.ObjectTree;assembly=Monitel.UI.Common"
+             xmlns:resources="clr-namespace:Monitel.UI.WPF.Resources;assembly=Monitel.UI.WPF.Resources"
+             mc:Ignorable="d"
+             Focusable="True"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             KeyUp="UserControl_KeyUp">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Monitel.SCADA.UICommon;component/Converters.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <micnv:Decrement x:Key="decrementConv" />
+            <src:ModelItemContainerStyleSelector x:Key="modelItemContainerStyleSelector" />
+            <src:ModelItemTemplateSelector x:Key="modelItemTemplateSelector" />
+
+            <Style TargetType="Image"
+                   x:Key="imgDocStyle">
+                <Setter Property="Margin"
+                        Value="0,0,5,0" />
+                <Setter Property="Stretch"
+                        Value="Uniform" />
+                <Setter Property="Width"
+                        Value="32" />
+                <Setter Property="Height"
+                        Value="32" />
+                <Setter Property="HorizontalAlignment"
+                        Value="Left" />
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+            </Style>
+
+            <Style TargetType="Image"
+                   x:Key="imgItemStyle">
+                <Setter Property="Margin"
+                        Value="0,3,5,0" />
+                <Setter Property="Stretch"
+                        Value="Uniform" />
+                <Setter Property="Width"
+                        Value="16" />
+                <Setter Property="Height"
+                        Value="16" />
+                <Setter Property="HorizontalAlignment"
+                        Value="Center" />
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+            </Style>
+
+            <Style TargetType="TextBlock"
+                   x:Key="textNameStyle">
+                <Setter Property="FontSize"
+                        Value="16" />
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+            </Style>
+
+            <Style TargetType="TextBlock"
+                   x:Key="textDescriptionStyle">
+                <Setter Property="FontSize"
+                        Value="12" />
+                <Setter Property="Margin"
+                        Value="0,2,0,0" />
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
+                <Setter Property="Opacity"
+                        Value="0.5" />
+            </Style>
+
+            <Style TargetType="TextBox"
+                   x:Key="maskStyleCompact"
+                   BasedOn="{StaticResource {x:Static ToolBar.TextBoxStyleKey}}">
+                <Setter Property="HorizontalAlignment"
+                        Value="Stretch" />
+                <Setter Property="Margin"
+                        Value="5,0" />
+            </Style>
+
+            <Style TargetType="TextBox"
+                   x:Key="maskStyleDefault"
+                   BasedOn="{StaticResource maskStyleCompact}">
+                <Setter Property="FontSize"
+                        Value="16" />
+            </Style>
+
+            <Style TargetType="ListBoxItem"
+                   x:Key="pathListBoxItemStyle">
+                <Setter Property="Background"
+                        Value="Transparent" />
+                <Setter Property="Padding"
+                        Value="2,0,0,0" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="3,0,0,0"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="modelItemTemplate"
+                          DataType="src:ModelItem">
+                <Border Name="border"
+                        Width="{Binding RelativeSource={RelativeSource AncestorType=ItemsPresenter, Mode=FindAncestor}, Path=ActualWidth, Converter={StaticResource decrementConv}, ConverterParameter=20}"
+                        Padding="5"
+                        Background="Transparent"
+                        MouseLeftButtonDown="ItemTemplate_MouseLeftButtonDown"
+                        MouseLeftButtonUp="ItemTemplate_MouseLeftButtonUp"
+                        MouseMove="ItemTemplate_MouseMove"
+                        ContextMenuOpening="ItemTemplate_ContextMenuOpening">
+                    <Border.ContextMenu>
+                        <ContextMenu />
+                    </Border.ContextMenu>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <resources:VectorImageContainer ImageSource="{Binding Path=Image}"
+                                                        Name="imgDoc"
+                                                        Style="{DynamicResource LargeViewBox}"
+                                                        Grid.RowSpan="2"
+                                                        Margin="0,0,5,0" />
+                        <TextBlock x:Name="txName"
+                                   Grid.Column="1"
+                                   Text="{Binding Name}"
+                                   Style="{StaticResource textNameStyle}" />
+                        <TextBlock x:Name="txPath"
+                                   Grid.Column="1"
+                                   Grid.Row="1"
+                                   Text="{Binding Path=Path}"
+                                   Style="{StaticResource textDescriptionStyle}" />
+                        <Separator x:Name="sep"
+                                   Grid.ColumnSpan="2"
+                                   Grid.RowSpan="2"
+                                   Style="{StaticResource separatorStyle}"
+                                   Visibility="Collapsed" />
+                    </Grid>
+                </Border>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Name}"
+                                 Value="">
+                        <Setter TargetName="sep"
+                                Property="Visibility"
+                                Value="Visible" />
+                        <Setter TargetName="imgDoc"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                        <Setter TargetName="txName"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                        <Setter TargetName="txPath"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+
+            <DataTemplate x:Key="modelItemCompactTemplate"
+                          DataType="src:ModelItem">
+                <Border Name="border"
+                        Width="{Binding RelativeSource={RelativeSource AncestorType=ItemsPresenter, Mode=FindAncestor}, Path=ActualWidth, Converter={StaticResource decrementConv}, ConverterParameter=20}"
+                        Padding="5"
+                        Background="Transparent"
+                        MouseLeftButtonDown="ItemTemplate_MouseLeftButtonDown"
+                        MouseLeftButtonUp="ItemTemplate_MouseLeftButtonUp"
+                        MouseMove="ItemTemplate_MouseMove"
+                        ContextMenuOpening="ItemTemplate_ContextMenuOpening">
+                    <Border.ContextMenu>
+                        <ContextMenu />
+                    </Border.ContextMenu>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="chkIsCheck"
+                                  Margin="0,3,5,0"
+                                  VerticalAlignment="Center"
+                                  IsChecked="{Binding Path=IsChecked}" />
+                        <Image x:Name="imgItem"
+                               Grid.Column="1"
+                               Style="{StaticResource imgItemStyle}"
+                               Source="{Binding Path=Image}" />
+                        <TextBlock x:Name="txName"
+                                   Grid.Column="2"
+                                   Text="{Binding Name}"
+                                   VerticalAlignment="Center"
+                                   ToolTip="{Binding Path=Path}"
+                                   Style="{Binding Path=ObjectStyle}" />
+                        <Separator x:Name="sep"
+                                   Grid.ColumnSpan="3"
+                                   Style="{StaticResource separatorStyle}"
+                                   Visibility="Collapsed" />
+                    </Grid>
+                </Border>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding CheckShow}"
+                                 Value="False">
+                        <Setter TargetName="chkIsCheck"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Name}"
+                                 Value="">
+                        <Setter TargetName="sep"
+                                Property="Visibility"
+                                Value="Visible" />
+                        <Setter TargetName="chkIsCheck"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                        <Setter TargetName="imgItem"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                        <Setter TargetName="txName"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+
+            <Style TargetType="ListBox"
+                   x:Key="pathListBoxStyle">
+                <Setter Property="BorderThickness"
+                        Value="0" />
+                <Setter Property="ItemContainerStyle"
+                        Value="{StaticResource pathListBoxItemStyle}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBox">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True" />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate DataType="src:ModelItem">
+                            <Grid>
+                                <dctrl:TBArrowButton x:Name="btnPath"
+                                                     ActionClick="btnPathItem_Click">
+                                    <dctrl:TBArrowButton.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Margin="0,0,5,0"
+                                                   Source="{Binding Image}" />
+                                            <TextBlock Text="{Binding Name}" />
+                                        </StackPanel>
+                                    </dctrl:TBArrowButton.Content>
+                                    <dctrl:TBArrowButton.DropDownMenu>
+                                        <ContextMenu x:Name="cmnPath"
+                                                     StaysOpen="True"
+                                                     Loaded="cmnPath_Loaded" />
+                                    </dctrl:TBArrowButton.DropDownMenu>
+                                </dctrl:TBArrowButton>
+                                <StackPanel x:Name="spPath"
+                                            Orientation="Horizontal"
+                                            Visibility="Collapsed">
+                                    <Image Margin="0,0,5,0"
+                                           Source="{Binding Image}" />
+                                    <TextBlock x:Name="txPath"
+                                               Text="{Binding Name}" />
+                                </StackPanel>
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding HasItems}"
+                                             Value="False">
+                                    <Setter TargetName="btnPath"
+                                            Property="Visibility"
+                                            Value="Collapsed" />
+                                    <Setter TargetName="spPath"
+                                            Property="Visibility"
+                                            Value="Visible" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="ListBox"
+                   x:Key="itemListBoxStyle">
+                <Setter Property="BorderThickness"
+                        Value="0" />
+                <Setter Property="Background"
+                        Value="{DynamicResource ControlWindowBackBrush}" />
+            </Style>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ListBox Name="lbPath"
+                 Style="{StaticResource pathListBoxStyle}" />
+        <Separator Grid.Row="1"
+                   Margin="5"
+                   Background="{DynamicResource separatorBrush}" />
+        <TextBox Name="tbMask"
+                 Grid.Row="2"
+                 Text="{Binding Mask, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{DynamicResource maskStyleDefault}"
+                 LostFocus="tbMask_LostFocus"
+                 GotFocus="tbMask_GotFocus" />
+        <TextBox x:Name="tbMaskPrompt"
+                 Grid.Row="2"
+                 Text="{lang:Link LocalePath=filter,DesignValue='Фильтр'}"
+                 IsReadOnly="True"
+                 Foreground="DarkGray"
+                 FontStyle="Italic"
+                 Style="{DynamicResource maskStyleDefault}"
+                 GotFocus="tbMaskPrompt_GotFocus" />
+        <Separator x:Name="sepMask"
+                   Grid.Row="3"
+                   Margin="5"
+                   Background="{DynamicResource separatorBrush}" />
+        <ListBox Name="lbItems"
+                 Grid.Row="4"
+                 Style="{StaticResource itemListBoxStyle}"
+                 ItemContainerStyleSelector="{StaticResource modelItemContainerStyleSelector}"
+                 ItemTemplateSelector="{StaticResource modelItemTemplateSelector}"
+                 KeyUp="lbItems_KeyUp"
+                 Visibility="Visible" />
+        <Grid x:Name="gridTree"
+              Grid.Row="4"
+              Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <tree:ObjectTreeControl x:Name="treeControl"
+                                    BorderThickness="0"
+                                    SelectedObjectChanged="treeControl_SelectedObjectChanged"
+                                    Focusable="True"
+                                    IsTabStop="True"
+                                    CanUserDrag="True"
+                                    StartDrag="treeControl_StartDrag" />
+            <tree:ObjectTreeSearchControl x:Name="treeSearchControl"
+                                          Grid.Row="1"
+                                          Focusable="True"
+                                          IsTabStop="True"
+                                          MinHeight="33"
+                                          ObjectTree="{Binding ElementName=treeControl}" />
+        </Grid>
+        <Separator Grid.Row="5"
+                   Margin="5"
+                   Background="{DynamicResource separatorBrush}" />
+        <Grid Grid.Row="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="VerticalAlignment"
+                            Value="Center" />
+                    <Setter Property="Margin"
+                            Value="5,0,5,3" />
+                </Style>
+            </Grid.Resources>
+            <StackPanel x:Name="spStatistic"
+                        Grid.ColumnSpan="2"
+                        Orientation="Horizontal">
+                <TextBlock x:Name="txStatisticTitle"
+                           Text="{lang:Link LocalePath=totalObjects,DesignValue='Всего объектов:'}" />
+                <TextBlock Text="{Binding Path=CurrentItemsCount}" />
+            </StackPanel>
+            <CheckBox Grid.Column="2"
+                      IsChecked="{Binding IsFuzzySearch}"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Center"
+                      Margin="5,0,5,3"
+                      Content="{lang:Link LocalePath=fuzzySearch}" />
+            <CheckBox x:Name="chkIsTreeView"
+                      Grid.Column="3"
+                      IsChecked="{Binding Path=IsTreeView}"
+                      Style="{StaticResource {x:Static ToolBar.CheckBoxStyleKey}}"
+                      VerticalAlignment="Center"
+                      Margin="5,0,5,3"
+                      Focusable="True">
+                <StackPanel Orientation="Horizontal">
+                    <Viewbox Style="{DynamicResource LargeViewBox}"
+                             Width="{Binding RelativeSource= {RelativeSource Mode=Self}, Path=Style, Converter={StaticResource adaptiveSizeConv}}"
+                             Height="{Binding RelativeSource= {RelativeSource Mode=Self}, Path=Style, Converter={StaticResource adaptiveSizeConv}}">
+                        <ContentPresenter Content="{x:Static resources:SharedIcons.Tree}" />
+                    </Viewbox>
+                    <TextBlock Text="{lang:Link LocalePath=hierarchyList}" />
+                </StackPanel>
+            </CheckBox>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,161 @@
+﻿<UserControl x:Class="Monitel.SCADA.UICommon.DiagramsSet.View.DiagramSetControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:model="clr-namespace:Monitel.SCADA.UICommon.DiagramsSet"
+             xmlns:lang="clr-namespace:Monitel.UI.WPFExtensions.Localization;assembly=Monitel.UI.WPFExtensions"
+             mc:Ignorable="d"
+             d:DesignHeight="300"
+             d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+
+            <ControlTemplate x:Key="editedBox">
+                <TextBox Text="{Binding Tag.Name,RelativeSource={RelativeSource TemplatedParent}}"
+                         Loaded="TbEdit_OnLoaded"
+                         Name="tbEdit" />
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="notEditedBox">
+                <TextBlock Text="{Binding Tag.Name,RelativeSource={RelativeSource TemplatedParent}}"
+                           Focusable="False" />
+            </ControlTemplate>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Name="mainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TreeView Grid.Row="1"
+                  SelectedItemChanged="treeItemChanged"
+                  ItemsSource="{Binding TreeItems}">
+
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type model:FolderItem}"
+                                          ItemsSource="{Binding Items}">
+
+                    <Grid>
+
+                        <Grid.ContextMenu>
+                            <ContextMenu Opened="treeMenuOpen"
+                                         Tag="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                <MenuItem Header="{lang:Link lbCreateFolder}"
+                                          Command="{Binding CreateFolder}"
+                                          CommandParameter="{Binding Tag,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Monitel.UI.Resources;component/PNGImages/FolderAdd.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                                <MenuItem Header="{lang:Link lbRemoveFolder}"
+                                          Command="{Binding RemoveFolder}"
+                                          CommandParameter="{Binding Tag,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Monitel.UI.Resources;component/PNGImages/FolderDel.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                                <Separator />
+
+                                <MenuItem Header="{lang:Link lbRename}"
+                                          Command="{Binding RenameDiagram}"
+                                          CommandParameter="{Binding Tag,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Monitel.UI.Resources;component/PNGImages/Rename.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="/Monitel.UI.Resources;component/PNGImages/Folder.png" />
+
+                        <ContentControl Loaded="NameCtrlLoaded"
+                                        Focusable="False"
+                                        Tag="{Binding}"
+                                        Margin="3 0 0 0"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Template="{StaticResource notEditedBox}" />
+                    </Grid>
+                </HierarchicalDataTemplate>
+
+                <DataTemplate  DataType="{x:Type model:DiagramItem}">
+                    <Grid>
+                        <Grid.ContextMenu>
+                            <ContextMenu Opened="treeMenuOpen"
+                                         Tag="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                <MenuItem Header="{lang:Link lbRemoveDiagram}"
+                                          Command="{Binding RemoveDiagram}"
+                                          CommandParameter="{Binding Tag,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Monitel.UI.Resources;component/PNGImages/ScriptDel.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                                <Separator />
+
+                                <MenuItem Header="{lang:Link lbRename}"
+                                          Command="{Binding RenameDiagram}"
+                                          CommandParameter="{Binding Tag,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Monitel.UI.Resources;component/PNGImages/Rename.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+
+                            </ContextMenu>
+                        </Grid.ContextMenu>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="/Monitel.UI.Resources;component/PNGImages/Script.png" />
+
+                        <ContentControl Loaded="NameCtrlLoaded"
+                                        Tag="{Binding}"
+                                        Focusable="False"
+                                        Margin="3 0 0 0"
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Template="{StaticResource notEditedBox}" />
+                    </Grid>
+                </DataTemplate>
+            </TreeView.Resources>
+
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}"
+                       BasedOn="{StaticResource styleTreeViewItemExtSelection}">
+
+                    <Setter Property="AutomationProperties.Name"
+                            Value="{Binding Name}" />
+
+                    <Setter Property="IsExpanded"
+                            Value="{Binding IsExpanded}" />
+
+                    <Setter Property="IsSelected"
+                            Value="{Binding IsSelected}" />
+
+                    <EventSetter Event="PreviewMouseRightButtonDown"
+                                 Handler="OnPreviewMouseButtonDown" />
+
+                    <EventSetter Event="PreviewMouseLeftButtonDown"
+                                 Handler="OnPreviewMouseButtonDown" />
+
+                    <EventSetter Event="PreviewKeyUp"
+                                 Handler="TreeItemPreviewKeyUp" />
+                </Style>
+            </TreeView.ItemContainerStyle>
+        </TreeView>
+    </Grid>
+</UserControl>
